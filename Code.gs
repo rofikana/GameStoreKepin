@@ -1,107 +1,238 @@
+// ==========================================
+// KONFIGURASI UTAMA
+// ==========================================
+const API_KEY = "KEPPIN_STORE_SECRET_2026"; // Sesuikan dengan script.js di website kamu
+const EMAIL_PENERIMA = "Roffiekanahaya@gmail.com"; // Email penerima notifikasi
 const SHEET_NAME = 'Orders';
-const API_KEY = 'seicut';
 
-function doGet(event) {
-  if (!isAuthorized(event.parameter.key)) {
-    return jsonResponse({ ok: false, error: 'Unauthorized' });
+// ==========================================
+// 1. HANDLER PENERIMAAN DATA (POST REQUEST)
+// ==========================================
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+
+    // Validasi API Key
+    if (!isAuthorized(data.apiKey)) {
+      return jsonResponse({ status: 'error', message: 'API Key tidak valid!' });
+    }
+
+    const action = data.action || 'createOrder';
+
+    // Rute Tindakan
+    if (action === 'createOrder') {
+      return handleCreateOrder(data);
+    } else if (action === 'updateStatus') {
+      return handleUpdateStatus(data);
+    } else {
+      return jsonResponse({ status: 'error', message: 'Aksi POST tidak valid.' });
+    }
+
+  } catch (error) {
+    return jsonResponse({ status: 'error', message: error.toString() });
   }
-
-  const sheet = getOrdersSheet();
-  const values = sheet.getDataRange().getValues();
-  const headers = values.shift() || [];
-  const orders = values.map(row => {
-    const order = {};
-    headers.forEach((header, index) => order[header] = row[index]);
-    return order;
-  });
-
-  return jsonResponse({ ok: true, orders: orders.reverse() });
 }
 
-function doPost(event) {
-  const body = JSON.parse(event.postData.contents || '{}');
-  if (body.key !== API_KEY) {
-    return jsonResponse({ ok: false, error: 'Unauthorized' });
-  }
+// ==========================================
+// 2. HANDLER PENGAMBILAN DATA (GET REQUEST)
+// ==========================================
+function doGet(e) {
+  try {
+    const apiKey = e.parameter.apiKey;
+    const action = e.parameter.action;
 
-  const sheet = getOrdersSheet();
+    if (!isAuthorized(apiKey)) {
+      return jsonResponse({ status: 'error', message: 'API Key tidak valid!' });
+    }
+
+    if (action === 'checkStatus') {
+      return handleCheckStatus(e.parameter.orderId);
+    } else if (action === 'getOrders') {
+      return handleGetOrders();
+    } else {
+      return jsonResponse({ status: 'error', message: 'Aksi GET tidak valid.' });
+    }
+
+  } catch (error) {
+    return jsonResponse({ status: 'error', message: error.toString() });
+  }
+}
+
+// ==========================================
+// 3. FUNGSI LOGIKA BISNIS & SPREADSHEET
+// ==========================================
+function handleCreateOrder(data) {
+  const sheet = getOrCreateSheet(SHEET_NAME);
+  const timestamp = new Date();
+
   sheet.appendRow([
-    new Date(),
-    body.game || '',
-    body.userId || '',
-    body.zoneId || '',
-    body.item || '',
-    body.payment || '',
-    body.price || 0,
-    body.status || 'Menunggu Konfirmasi',
-    body.date || '',
-    body.email || ''
+    timestamp,
+    data.orderId || '',
+    data.game || '',
+    data.userId || '',
+    data.zoneId || '-',
+    data.item || '',
+    data.payment || '',
+    data.uniqueCode || 0,
+    data.price || 0,
+    data.status || 'PENDING'
   ]);
 
-  sendEmailNotification(body);
+  sendEmailNotification(data);
 
-  return jsonResponse({ ok: true });
-}
-
-function sendEmailNotification(order) {
-  const email = PropertiesService.getScriptProperties().getProperty('NOTIFICATION_EMAIL') || '';
-  if (!email) return;
-
-  const message = [
-    'Pesanan baru masuk di Keppin Game Store',
-    '',
-    `Game: ${order.game || '-'}`,
-    `User ID: ${order.userId || '-'}`,
-    `Zona ID: ${order.zoneId || '-'}`,
-    `Item: ${order.item || '-'}`,
-    `Metode: ${order.payment || '-'}`,
-    `Total: Rp ${Number(order.price || 0).toLocaleString('id-ID')}`,
-    `Status: ${order.status || 'Menunggu Konfirmasi'}`
-  ].join('\n');
-
-  MailApp.sendEmail({
-    to: email,
-    subject: `Pesanan baru - ${order.game || 'Keppin Game Store'}`,
-    body: message
+  return jsonResponse({
+    status: 'success',
+    message: 'Pesanan berhasil dibuat dan notifikasi dikirim.',
+    orderId: data.orderId
   });
 }
 
-function testEmailNotification() {
-  sendEmailNotification({
-    game: 'Tes Keppin Store',
-    userId: '12345678',
-    zoneId: '1234',
-    item: 'Tes pembayaran',
-    payment: 'QRIS',
-    price: 1000,
-    status: 'Tes notifikasi',
-    date: new Date().toLocaleString('id-ID')
-  });
-}
+function handleUpdateStatus(data) {
+  const sheet = getOrCreateSheet(SHEET_NAME);
+  const values = sheet.getDataRange().getValues();
 
-function getOrdersSheet() {
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = spreadsheet.getSheetByName(SHEET_NAME);
-  if (!sheet) sheet = spreadsheet.insertSheet(SHEET_NAME);
-
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(['createdAt', 'game', 'userId', 'zoneId', 'item', 'payment', 'price', 'status', 'date', 'email']);
-    sheet.setFrozenRows(1);
-  } else {
-    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-    if (!headers.includes('email')) {
-      sheet.getRange(1, sheet.getLastColumn() + 1).setValue('email');
+  for (let i = 1; i < values.length; i++) {
+    if (String(values[i][1]) === String(data.orderId)) {
+      sheet.getRange(i + 1, 10).setValue(data.newStatus);
+      return jsonResponse({
+        status: 'success',
+        message: `Status pesanan ${data.orderId} berhasil diperbarui menjadi ${data.newStatus}.`
+      });
     }
   }
+
+  return jsonResponse({ status: 'error', message: 'ID Pesanan tidak ditemukan.' });
+}
+
+function handleCheckStatus(orderId) {
+  const sheet = getOrCreateSheet(SHEET_NAME);
+  const data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][1]) === String(orderId)) {
+      return jsonResponse({
+        status: 'success',
+        orderId: data[i][1],
+        orderStatus: data[i][9]
+      });
+    }
+  }
+
+  return jsonResponse({ status: 'error', message: 'ID Pesanan tidak ditemukan.' });
+}
+
+function handleGetOrders() {
+  const sheet = getOrCreateSheet(SHEET_NAME);
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0] || [];
+  const orders = [];
+
+  for (let i = 1; i < data.length; i++) {
+    let order = {};
+    for (let j = 0; j < headers.length; j++) {
+      order[headers[j]] = data[i][j];
+    }
+    orders.push(order);
+  }
+
+  return jsonResponse({ status: 'success', data: orders.reverse() });
+}
+
+// ==========================================
+// 4. NOTIFIKASI EMAIL & HELPER
+// ==========================================
+function sendEmailNotification(order) {
+  if (!EMAIL_PENERIMA) return;
+
+  const subjek = `[PESANAN BARU] ${order.game || '-'} - ${order.orderId || '-'}`;
+  const pesanTeks = 
+    `Halo Admin,\n\n` +
+    `Ada pesanan baru masuk ke Keppin Game Store:\n\n` +
+    `• ID Pesanan  : ${order.orderId || '-'}\n` +
+    `• Game        : ${order.game || '-'}\n` +
+    `• User ID     : ${order.userId || '-'}\n` +
+    `• Zone ID     : ${order.zoneId || '-'}\n` +
+    `• Item        : ${order.item || '-'}\n` +
+    `• Pembayaran  : ${order.payment || '-'}\n` +
+    `• Kode Unik   : ${order.uniqueCode || 0}\n` +
+    `• Total Bayar : Rp ${Number(order.price || 0).toLocaleString('id-ID')}\n` +
+    `• Status      : ${order.status || 'PENDING'}\n\n` +
+    `Silakan cek Google Sheets Anda untuk memproses transaksi.`;
+
+  try {
+    MailApp.sendEmail({
+      to: EMAIL_PENERIMA,
+      subject: subjek,
+      body: pesanTeks
+    });
+  } catch (err) {
+    console.error("Gagal mengirim email: " + err.toString());
+  }
+}
+
+function getOrCreateSheet(sheetName) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(sheetName);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+  }
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      'Timestamp', 'Order ID', 'Game', 'User ID', 
+      'Zone ID', 'Item', 'Payment', 'Unique Code', 
+      'Price', 'Status'
+    ]);
+    sheet.setFrozenRows(1);
+  }
+
   return sheet;
 }
 
 function isAuthorized(key) {
-  return key && key === API_KEY && API_KEY !== 'GANTI_DENGAN_KODE_RAHASIA';
+  return key && key === API_KEY;
 }
 
 function jsonResponse(data) {
   return ContentService
     .createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ==========================================
+// 5. FUNGSI PENGUJIAN (TESTING)
+// ==========================================
+function testKirimEmail() {
+  const testOrder = {
+    orderId: 'TEST-123456',
+    game: 'Mobile Legends',
+    userId: '12345678',
+    zoneId: '1234',
+    item: '86 Diamonds',
+    payment: 'QRIS',
+    uniqueCode: 123,
+    price: 20123,
+    status: 'PENDING'
+  };
+
+  sendEmailNotification(testOrder);
+}
+
+function testBuatPesanan() {
+  const testData = {
+    apiKey: API_KEY,
+    action: 'createOrder',
+    orderId: 'TEST-' + Math.floor(Math.random() * 899999 + 100000),
+    game: 'Mobile Legends',
+    userId: '12345678',
+    zoneId: '1234',
+    item: '86 Diamonds',
+    payment: 'QRIS',
+    uniqueCode: 123,
+    price: 20123,
+    status: 'PENDING'
+  };
+  
+  handleCreateOrder(testData);
 }
