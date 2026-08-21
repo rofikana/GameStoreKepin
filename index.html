@@ -48,6 +48,8 @@
       color: var(--text-main);
       padding-bottom: 50px;
       line-height: 1.5;
+      min-width: 320px;
+      overflow-x: hidden;
     }
 
     header {
@@ -60,6 +62,9 @@
       top: 0;
       z-index: 100;
       border-bottom: 1px solid var(--border-color);
+      padding-top: max(16px, env(safe-area-inset-top));
+      padding-left: max(24px, env(safe-area-inset-left));
+      padding-right: max(24px, env(safe-area-inset-right));
     }
 
     .logo {
@@ -123,6 +128,16 @@
       font-size: 1.2rem;
       font-weight: 600;
       color: var(--text-main);
+      text-align: center;
+    }
+
+    .section-kicker {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--accent-primary);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
     }
 
     .search-box {
@@ -178,6 +193,23 @@
     .game-card:hover, .game-card.active {
       transform: translateY(-3px);
       border-color: var(--accent-primary);
+    }
+
+    .game-card,
+    .item-card,
+    .payment-card,
+    button {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .game-card:focus-visible,
+    .item-card:focus-visible,
+    .payment-card:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--accent-primary);
+      outline-offset: 2px;
     }
 
     .game-card img {
@@ -332,6 +364,8 @@
       align-items: center;
       z-index: 1000;
       padding: 16px;
+      padding-top: max(16px, env(safe-area-inset-top));
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
     }
 
     .modal-box {
@@ -452,64 +486,206 @@
     .btn-danger:hover {
       background: rgba(239, 68, 68, 0.1);
     }
+
+    footer {
+      max-width: 900px;
+      margin: 40px auto 0;
+      padding: 20px 16px max(20px, env(safe-area-inset-bottom));
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted);
+      text-align: center;
+      font-size: 0.82rem;
+    }
+
+    .footer-title {
+      color: var(--text-main);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 12px max(16px, env(safe-area-inset-left)) 12px max(16px, env(safe-area-inset-right));
+        gap: 10px;
+      }
+
+      .logo {
+        font-size: 1rem;
+      }
+
+      .header-actions {
+        gap: 6px;
+      }
+
+      .btn-header {
+        padding: 7px 9px;
+        font-size: 0.78rem;
+        min-height: 40px;
+      }
+
+      .container {
+        margin: 24px auto;
+      }
+
+      .section-header {
+        align-items: stretch;
+      }
+
+      .search-box {
+        max-width: none;
+      }
+
+      .checkout-section,
+      .modal-box {
+        padding: 18px;
+      }
+
+      .section-title {
+        text-align: left;
+      }
+
+      .section-kicker {
+        font-size: 0.65rem;
+      }
+
+      .game-card:active,
+      .item-card:active,
+      .payment-card:active {
+        transform: scale(0.98);
+      }
+
+      .item-card,
+      .payment-card {
+        min-height: 56px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .payment-card {
+        min-height: 48px;
+      }
+
+      .form-group input,
+      .search-box input,
+      .btn-submit,
+      .btn-close {
+        min-height: 48px;
+        font-size: 16px;
+      }
+
+      .modal-overlay {
+        align-items: flex-end;
+      }
+
+      .modal-box {
+        max-height: 90vh;
+        border-radius: 16px 16px 0 0;
+      }
+
+      .game-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .game-card img {
+        height: 110px;
+      }
+    }
+
+    @media (min-width: 601px) and (max-width: 1024px) {
+      .container {
+        max-width: 820px;
+      }
+
+      .game-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .container {
+        max-width: 1080px;
+      }
+
+      .game-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .game-card:hover {
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
 <body>
 
   <header>
     <div class="logo">
-      <span>Kepin Store</span>
+      <span>Kepin Game</span>
       <span class="logo-badge">STORE</span>
     </div>
     
     <div class="header-actions">
-      <button class="btn-header" onclick="openHistoryModal()">
-        <span>📜</span> Riwayat
+      <button class="btn-header" type="button" onclick="openHistoryModal()" aria-label="Buka riwayat pesanan">
+        <span aria-hidden="true">🧾</span> Riwayat
       </button>
 
-      <button class="btn-header" id="themeToggleBtn" onclick="toggleTheme()">
-        <span id="themeIcon">🌙</span>
+      <button class="btn-header" type="button" id="themeToggleBtn" onclick="toggleTheme()">
+        <span id="themeIcon"></span>
         <span id="themeText">Dark</span>
       </button>
     </div>
   </header>
 
-  <div class="container">
+  <main class="container">
     <div class="section-header">
-      <h2 class="section-title">Pilih Game</h2>
+      <div>
+        <span class="section-kicker">TOP UP CEPAT & AMAN</span>
+        <h2 class="section-title">Pilih Game Favoritmu</h2>
+      </div>
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" onkeyup="filterGames()" placeholder="Cari game...">
+        <input type="search" id="searchInput" oninput="filterGames()" placeholder="Cari game..." aria-label="Cari game">
       </div>
     </div>
     
     <div class="game-grid" id="gameGrid">
-      <div class="game-card" id="card-ml" data-title="mobile legends moonton ml" onclick="selectGame('ml')">
-        <img src="https://i.pinimg.com/736x/ea/1e/d1/ea1ed14327f20b2037fc7aea3ac523d4.jpg" alt="Mobile Legends">
+      <div class="game-card" id="card-ml" data-title="mobile legends moonton ml" onclick="selectGame('ml')" onkeydown="activateCard(event, 'ml')" role="button" tabindex="0" aria-label="Pilih Mobile Legends">
+        <img src="https://i.pinimg.com/736x/ea/1e/d1/ea1ed14327f20b2037fc7aea3ac523d4.jpg" alt="Mobile Legends" loading="lazy">
         <div class="game-info">
           <div class="game-title">Mobile Legends</div>
           <div class="game-publisher">Moonton</div>
         </div>
       </div>
 
-      <div class="game-card" id="card-roblox" data-title="roblox robux" onclick="selectGame('roblox')">
-        <img src="https://i.pinimg.com/736x/eb/20/30/eb203036af2bf931259d9c2ae254b2cd.jpg" alt="Roblox">
+      <div class="game-card" id="card-roblox" data-title="roblox robux" onclick="selectGame('roblox')" onkeydown="activateCard(event, 'roblox')" role="button" tabindex="0" aria-label="Pilih Roblox">
+        <img src="https://i.pinimg.com/736x/eb/20/30/eb203036af2bf931259d9c2ae254b2cd.jpg" alt="Roblox" loading="lazy">
         <div class="game-info">
           <div class="game-title">Roblox</div>
           <div class="game-publisher">Roblox Corp</div>
         </div>
       </div>
 
-      <div class="game-card" id="card-pubg" data-title="pubg mobile tencent uc" onclick="selectGame('pubg')">
-        <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=500&q=80" alt="PUBG Mobile">
+      <div class="game-card" id="card-pubg" data-title="pubg mobile tencent uc" onclick="selectGame('pubg')" onkeydown="activateCard(event, 'pubg')" role="button" tabindex="0" aria-label="Pilih PUBG Mobile">
+        <img src="https://i.pinimg.com/736x/d8/24/11/d82411fa20d0886599a37b451342c013.jpg" alt="PUBG Mobile" loading="lazy">
         <div class="game-info">
           <div class="game-title">PUBG Mobile</div>
           <div class="game-publisher">Tencent</div>
         </div>
       </div>
 
-      <div class="game-card" id="card-ff" data-title="free fire garena ff" onclick="selectGame('ff')">
-        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=500&q=80" alt="Free Fire">
+      <div class="game-card" id="card-ff" data-title="free fire garena ff" onclick="selectGame('ff')" onkeydown="activateCard(event, 'ff')" role="button" tabindex="0" aria-label="Pilih Free Fire">
+        <img src="https://i.pinimg.com/736x/35/bb/5a/35bb5af231507e04fa472687d360b560.jpg" alt="Free Fire" loading="lazy">
         <div class="game-info">
           <div class="game-title">Free Fire</div>
           <div class="game-publisher">Garena</div>
@@ -523,7 +699,7 @@
       <div class="step-box">
         <div class="step-title">1. Masukkan User ID</div>
         <div class="form-group">
-          <input type="text" id="userId" placeholder="Masukkan ID akun game Anda">
+          <input type="text" id="userId" placeholder="Masukkan ID akun game Anda" autocomplete="username" aria-label="User ID akun game">
         </div>
       </div>
 
@@ -545,7 +721,14 @@
 
       <button class="btn-submit" onclick="processOrder()">Lanjutkan Pembayaran</button>
     </div>
-  </div>
+  </main>
+
+  <footer>
+    <div class="footer-title">Kepin Game Store</div>
+    <div>Top up game cepat, aman, dan terpercaya.</div>
+    <div>Hubungi kami melalui WhatsApp untuk bantuan dan konfirmasi pesanan.</div>
+    <div>&copy; 2025 Kepin Game Store. Semua hak dilindungi.</div>
+  </footer>
 
   <!-- Modal Pop-up Invoice -->
   <div class="modal-overlay" id="modalInvoice">
@@ -568,6 +751,13 @@
   </div>
 
   <script>
+    function activateCard(event, gameKey) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        selectGame(gameKey);
+      }
+    }
+
     function initTheme() {
       const savedTheme = localStorage.getItem('theme') || 'dark';
       document.documentElement.setAttribute('data-theme', savedTheme);
@@ -586,12 +776,29 @@
     function updateThemeButton(theme) {
       const themeIcon = document.getElementById('themeIcon');
       const themeText = document.getElementById('themeText');
+      const themeButton = themeIcon ? themeIcon.closest('button') : null;
+      if (!themeIcon || !themeText) return;
+
+      themeText.style.textAlign = 'center';
+
       if (theme === 'light') {
-        themeIcon.textContent = '☀️';
         themeText.textContent = 'Light';
+        themeIcon.setAttribute('aria-hidden', 'true');
+        themeText.setAttribute('aria-label', 'Light theme aktif');
+        if (themeButton) {
+          themeButton.title = 'Beralih ke tema gelap';
+          themeButton.setAttribute('aria-label', 'Beralih ke tema gelap');
+          themeButton.dataset.theme = 'light';
+        }
       } else {
-        themeIcon.textContent = '🌙';
         themeText.textContent = 'Dark';
+        themeIcon.setAttribute('aria-hidden', 'true');
+        themeText.setAttribute('aria-label', 'Dark theme aktif');
+        if (themeButton) {
+          themeButton.title = 'Beralih ke tema terang';
+          themeButton.setAttribute('aria-label', 'Beralih ke tema terang');
+          themeButton.dataset.theme = 'dark';
+        }
       }
     }
 
@@ -600,7 +807,7 @@
     const catalog = {
       ml: { title: "Mobile Legends", items: [{ name: "86 Diamonds", price: 20000 }, { name: "172 Diamonds", price: 40000 }, { name: "257 Diamonds", price: 60000 }, { name: "Weekly Pass", price: 28000 }] },
       roblox: { title: "Roblox", items: [{ name: "80 Robux", price: 15000 }, { name: "400 Robux", price: 75000 }, { name: "800 Robux", price: 140000 }] },
-      pubg: { title: "PUBG Mobile", items: [{ name: "60 UC", price: 15000 }, { name: "325 UC", price: 75000 }, { name: "660 UC", price: 145000 }] },
+      pubg: { title: "PUBG Mobile", items: [{ name: "60 UC", price: 17893 }, { name: "325 UC", price: 89466 }, { name: "660 UC", price: 178932 }, { name: "1.800 UC", price: 447330 }, { name: "3.850 UC", price: 894660 }, { name: "8.100 UC", price: 1789320 }, { name: "16.200 UC", price: 3578640 }, { name: "24.300 UC", price: 5367960 }, { name: "32.400 UC", price: 7157280 }, { name: "40.500 UC", price: 8946600 }] },
       ff: { title: "Free Fire", items: [{ name: "140 Diamonds", price: 20000 }, { name: "355 Diamonds", price: 50000 }, { name: "720 Diamonds", price: 100000 }] }
     };
 
