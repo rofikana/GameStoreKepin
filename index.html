@@ -3,38 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kepin Store - Top Up Games</title>
+  <title>Keppin Store - Top Up Games</title>
   <style>
-    /* 1. Variabel Eye-Friendly Dark Theme */
-    :root {
-      --bg-main: #121824;
-      --bg-card: #1e293b;
-      --bg-input: #0f172a;
-      --text-main: #e2e8f0;
-      --text-muted: #94a3b8;
-      --accent-primary: #3b82f6;
-      --accent-hover: #2563eb;
-      --accent-price: #f59e0b;
-      --accent-green: #10b981;
-      --border-color: #334155;
-      --modal-overlay: rgba(0, 0, 0, 0.7);
-    }
-
-    /* 2. Variabel Light Theme Soft */
-    [data-theme="light"] {
-      --bg-main: #f1f5f9;
-      --bg-card: #ffffff;
-      --bg-input: #f8fafc;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --accent-primary: #2563eb;
-      --accent-hover: #1d4ed8;
-      --accent-price: #d97706;
-      --accent-green: #059669;
-      --border-color: #e2e8f0;
-      --modal-overlay: rgba(15, 23, 42, 0.5);
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -152,7 +122,7 @@
       border-radius: 10px;
       border: 1px solid var(--border-color);
       background-color: var(--bg-input);
-      color: var(--text-main);
+      color: #000000(--text-main);
       font-size: 0.9rem;
       outline: none;
     }
@@ -216,6 +186,9 @@
       width: 100%;
       height: 140px;
       object-fit: cover;
+      object-position: center;
+      display: block;
+      background-color: var(--bg-input);
     }
 
     .game-info {
@@ -250,6 +223,69 @@
       display: none;
     }
 
+    .product-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .product-banner-icon {
+      width: 58px;
+      height: 58px;
+      flex: 0 0 58px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid var(--border-color);
+    }
+
+    .product-banner h3 {
+      font-size: 1.05rem;
+      color: var(--text-main);
+    }
+
+    .product-banner p {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      margin-top: 2px;
+    }
+
+    .pubg-redeem-guide {
+      display: none;
+      margin: -8px 0 24px;
+      padding: 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-input);
+    }
+
+    .pubg-redeem-guide.visible {
+      display: block;
+    }
+
+    .pubg-redeem-guide h4 {
+      margin-bottom: 10px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+    }
+
+    .pubg-redeem-guide ol {
+      padding-left: 20px;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    .pubg-redeem-guide li + li {
+      margin-top: 7px;
+    }
+
+    .pubg-redeem-guide a {
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
     .step-box {
       margin-bottom: 24px;
     }
@@ -276,6 +312,42 @@
       border-color: var(--accent-primary);
     }
 
+    .player-id-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .player-id-field input {
+      min-width: 0;
+    }
+
+    .player-id-field label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .player-id-help {
+      margin-top: 8px;
+      max-width: 720px;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
+    .roblox-email-step {
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      .player-id-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .nominal-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -288,10 +360,13 @@
       border: 1px solid var(--border-color);
       border-radius: 10px;
       cursor: pointer;
+      position: relative;
+      transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
     }
 
     .item-card:hover {
       border-color: var(--text-muted);
+      transform: translateY(-2px);
     }
 
     .item-card.active {
@@ -309,6 +384,20 @@
       margin-top: 6px;
       color: var(--accent-price);
       font-weight: 600;
+    }
+
+    .item-card.active::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      width: 14px;
+      height: 14px;
+      transform: translateY(-50%);
+      border: 3px solid var(--accent-primary);
+      border-radius: 50%;
+      background-color: var(--accent-primary);
+      box-shadow: inset 0 0 0 2px var(--bg-card);
     }
 
     .payment-grid {
@@ -352,6 +441,54 @@
 
     .btn-submit:hover {
       background-color: var(--accent-hover);
+    }
+
+    .purchase-notification {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 1100;
+      max-width: 340px;
+      padding: 14px 16px;
+      border: 1px solid var(--accent-green);
+      border-radius: 8px;
+      background: var(--bg-card);
+      color: var(--text-main);
+      box-shadow: 0 8px 24px rgba(2, 6, 23, 0.22);
+      font-size: 0.9rem;
+    }
+
+    .payment-instructions {
+      display: none;
+      margin-bottom: 20px;
+      padding: 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-input);
+      text-align: center;
+    }
+
+    .payment-instructions.visible {
+      display: block;
+    }
+
+    .payment-account {
+      display: block;
+      margin-top: 6px;
+      color: var(--accent-price);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .payment-instructions img {
+      display: block;
+      width: min(100%, 240px);
+      aspect-ratio: 1;
+      margin: 12px auto 0;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #fff;
     }
 
     .modal-overlay {
@@ -436,16 +573,29 @@
     .history-card {
       background: var(--bg-input);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 12px;
+      border-radius: 8px;
+      padding: 14px;
       font-size: 0.85rem;
     }
 
     .history-top {
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
       font-weight: 600;
       margin-bottom: 6px;
+    }
+
+    .history-top span:last-child {
+      white-space: nowrap;
+      font-weight: 700;
+    }
+
+    .history-id {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-top: 4px;
     }
 
     .history-date {
@@ -455,13 +605,13 @@
 
     .history-status {
       display: inline-block;
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      border-radius: 4px;
+      margin-top: 10px;
+      font-size: 0.72rem;
+      padding: 4px 8px;
+      border-radius: 999px;
       background: rgba(245, 158, 11, 0.15);
       color: var(--accent-price);
       font-weight: 600;
-      margin-top: 6px;
     }
 
     .empty-history {
@@ -503,6 +653,136 @@
       margin-bottom: 4px;
     }
 
+    .dev-access {
+      margin-top: 12px;
+      padding: 6px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .dev-access:hover {
+      border-color: var(--accent-primary);
+      color: var(--text-main);
+    }
+
+    .dev-summary {
+      margin-bottom: 16px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .dev-greeting {
+      margin-bottom: 4px;
+      color: var(--text-main);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .dev-login-form {
+      display: grid;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .dev-login-form label {
+      display: grid;
+      gap: 6px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .dev-login-form input {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-input);
+      color: var(--text-main);
+      font-size: 16px;
+    }
+
+    .dev-login-error {
+      min-height: 18px;
+      color: #ef4444;
+      font-size: 0.8rem;
+    }
+
+    .dev-edit-select {
+      margin-top: 8px;
+      padding: 6px 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-input);
+      color: var(--text-main);
+      font-size: 0.78rem;
+    }
+
+    .dev-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .dev-actions button {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid var(--accent-green);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--accent-green);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .dev-actions button:hover {
+      background: rgba(52, 211, 153, 0.12);
+    }
+
+    .dev-actions .dev-logout {
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+
+    .dev-actions .dev-clear {
+      border-color: #f59e0b;
+      color: #f59e0b;
+    }
+
+    .dev-check-title {
+      margin-bottom: 8px;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .dev-check-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .dev-check-grid button {
+      padding: 9px 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-input);
+      color: var(--text-main);
+      cursor: pointer;
+      font-size: 0.78rem;
+    }
+
+    .dev-check-grid button:hover {
+      border-color: var(--accent-primary);
+    }
+
     @media (max-width: 600px) {
       header {
         padding: 12px max(16px, env(safe-area-inset-left)) 12px max(16px, env(safe-area-inset-right));
@@ -538,6 +818,10 @@
       .checkout-section,
       .modal-box {
         padding: 18px;
+      }
+
+      .product-banner {
+        align-items: flex-start;
       }
 
       .section-title {
@@ -625,19 +909,426 @@
         scroll-behavior: auto !important;
       }
     }
+
+    /* Palet minimalis: navy, teal, dan ivory */
+    :root {
+      --bg-main: #0f172a;
+      --bg-card: #172554;
+      --bg-input: #111c38;
+      --text-main: #e0f2fe;
+      --text-muted: #93a4bd;
+      --accent-primary: #2dd4bf;
+      --accent-hover: #14b8a6;
+      --accent-price: #fbbf24;
+      --accent-green: #34d399;
+      --border-color: #29416b;
+      --modal-overlay: rgba(2, 6, 23, 0.78);
+    }
+
+    [data-theme="light"] {
+      --bg-main: #f4f7f6;
+      --bg-card: #ffffff;
+      --bg-input: #eef5f3;
+      --text-main: #18302f;
+      --text-muted: #687c7b;
+      --accent-primary: #0f766e;
+      --accent-hover: #115e59;
+      --accent-price: #b45309;
+      --accent-green: #15803d;
+      --border-color: #d7e5e1;
+      --modal-overlay: rgba(15, 45, 42, 0.55);
+    }
+
+    body {
+      background: var(--bg-main);
+    }
+
+    header {
+      background: #172554;
+      border-bottom: 0;
+      padding: 14px max(6%, env(safe-area-inset-right)) 14px max(6%, env(safe-area-inset-left));
+      color: #fff ;
+    }
+
+    .logo { color: #f0fdfa; font-size: 1.45rem; letter-spacing: -.03em; }
+    .logo::before { content: '◈'; color: #2dd4bf; font-size: 1.7rem; }
+    .logo-badge { background: #0f766e; border-radius: 3px; }
+    .btn-header { background: transparent; border-color: #40558a; color: #f0fdfa; border-radius: 6px; }
+    .btn-header:hover { border-color: #2dd4bf; color: #99f6e4; }
+
+    .container { max-width: 1180px; margin: 42px auto; }
+    .section-header { align-items: end; margin-bottom: 28px; }
+    .section-kicker { color: var(--accent-primary); font-size: .75rem; }
+    .section-title { font-size: 1.75rem; text-align: left; }
+    .search-box { max-width: 350px; }
+    .search-box input { background: #fff; border-radius: 6px; padding-top: 13px; padding-bottom: 13px; }
+
+    .game-grid { grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 20px; }
+    .game-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 3px 14px rgba(2, 6, 23, .12); }
+    .game-card:hover, .game-card.active { transform: translateY(-5px); border-color: var(--accent-primary); box-shadow: 0 8px 22px rgba(45, 212, 191, .18); }
+    .game-card img { height: 155px; }
+    .game-info { padding: 16px; }
+    .game-title { font-size: 1rem; }
+
+    .checkout-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 3px 14px rgba(2, 6, 23, .12); }
+    .step-title { color: var(--text-main); border-left: 4px solid var(--accent-primary); padding-left: 10px; }
+    .item-card, .payment-card { background: var(--bg-card); border-color: var(--border-color); border-radius: 6px; }
+    .item-card.active, .payment-card.active { border-color: var(--accent-primary); background: color-mix(in srgb, var(--accent-primary) 10%, var(--bg-card)); }
+    .btn-submit { background: var(--accent-primary); border-radius: 6px; }
+    .btn-submit:hover { background: var(--accent-hover); }
+    footer { max-width: 1180px; }
+
+    .dev-test-button {
+      display: none;
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px;
+      border: 1px dashed var(--accent-price);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--accent-price);
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .dev-test-button.visible {
+      display: block;
+    }
+
+    .dev-payment-option {
+      display: none;
+      border-style: dashed;
+      border-color: var(--accent-price);
+      color: var(--accent-price);
+    }
+
+    .dev-payment-option.visible {
+      display: grid;
+    }
+
+    /* Clean store navigation for desktop and mobile. */
+    header {
+      gap: 20px;
+      min-height: 68px;
+    }
+
+    .header-actions {
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn-header {
+      min-height: 38px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+    }
+
+    /* Final header polish: the header follows the active theme. */
+    header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding-top: max(12px, env(safe-area-inset-top));
+      padding-bottom: 12px;
+    }
+
+    .logo {
+      min-width: 0;
+      color: var(--text-main);
+      font-size: 1.2rem;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .logo::before {
+      color: var(--accent-primary);
+      font-size: 1.35rem;
+    }
+
+    .logo-badge {
+      padding: 3px 7px;
+      background: var(--accent-primary);
+      color: #052e2b;
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+    }
+
+    .header-actions {
+      flex: 0 0 auto;
+      align-items: center;
+    }
+
+    .btn-header {
+      background: var(--bg-input);
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+
+    .btn-header:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    #themeToggleBtn {
+      min-width: 92px;
+      justify-content: center;
+    }
+
+    #themeIcon {
+      width: 16px;
+      text-align: center;
+      color: var(--accent-price);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        align-items: flex-start;
+      }
+
+      .logo {
+        min-width: 0;
+      }
+
+      .header-actions {
+        gap: 6px;
+      }
+
+      .btn-header {
+        padding: 7px 9px;
+        font-size: 0.76rem;
+      }
+
+      .logo {
+        font-size: 1rem;
+      }
+
+      .logo-badge {
+        display: none;
+      }
+
+      #themeToggleBtn {
+        min-width: 72px;
+      }
+    }
+
+    /* Tampilan pilihan jumlah mengikuti panel top-up Mobile Legends. */
+    .amount-step {
+      margin-top: 4px;
+    }
+
+    .amount-step .step-title {
+      display: block;
+      border-left: 4px solid var(--accent-primary);
+      padding-left: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 12px;
+    }
+
+    .amount-step .step-title::before {
+      display: none;
+    }
+
+    .amount-category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 54px;
+    }
+
+    .amount-category,
+    .item-card.amount-item {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      min-height: 59px;
+      padding: 10px 18px;
+      background: #1d2027;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      color: #f8fafc;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .amount-category:hover,
+    .amount-category.active,
+    .item-card.amount-item:hover,
+    .item-card.amount-item.active {
+      border-color: #ff9b22;
+      transform: none;
+    }
+
+    .amount-category.active {
+      background: #4b3828;
+    }
+
+    .amount-category-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .amount-info {
+      width: 20px;
+      height: 20px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 20px;
+      border-radius: 50%;
+      background: #f8fafc;
+      color: #1d2027;
+      font-size: .75rem;
+      font-weight: 800;
+    }
+
+    .amount-product-title {
+      margin: 0 0 20px 4px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .amount-item-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item-card.amount-item {
+      min-height: 102px;
+      border: 3px solid transparent;
+      border-radius: 13px;
+      padding: 10px 16px;
+    }
+
+    .item-card.amount-item.active {
+      background: #1d2027;
+      border-color: #ff9b22;
+    }
+
+    .amount-item-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+    }
+
+    .amount-item .item-price {
+      margin: 0;
+      color: #ff9226;
+      font-size: 1rem;
+    }
+
+    .amount-item::after {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .amount-category-grid {
+        grid-template-columns: 1fr;
+        margin-bottom: 34px;
+      }
+
+      .amount-step .step-title {
+        font-size: 0.95rem;
+      }
+    }
+
+    .payment-grid .dev-payment-option {
+      display: none;
+    }
+
+    .payment-grid .dev-payment-option.visible {
+      display: grid;
+    }
+
+    /* Payment and QRIS layout: stable across phones, tablets, and desktops. */
+    .payment-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .payment-card {
+      min-height: 52px;
+      display: grid;
+      place-items: center;
+      padding: 10px 8px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .modal-box {
+      width: min(100%, 440px);
+      max-height: min(85vh, 720px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    .payment-instructions {
+      flex: 0 0 auto;
+    }
+
+    .payment-instructions img {
+      width: min(68vw, 240px);
+      max-height: min(68vw, 240px);
+    }
+
+    @media (max-width: 900px) {
+      .payment-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .payment-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .payment-card {
+        min-height: 50px;
+        font-size: 0.82rem;
+      }
+
+      .modal-overlay {
+        padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+      }
+
+      .modal-box {
+        width: 100%;
+        padding: 18px;
+        max-height: calc(100vh - 24px);
+      }
+
+      .payment-instructions {
+        padding: 12px;
+        margin-bottom: 16px;
+      }
+
+      .payment-instructions img {
+        width: min(68vw, 220px);
+        max-height: 220px;
+      }
+    }
   </style>
 </head>
 <body>
 
   <header>
     <div class="logo">
-      <span>Kepin Game</span>
+      <span>Keppin Game</span>
       <span class="logo-badge">STORE</span>
     </div>
     
     <div class="header-actions">
       <button class="btn-header" type="button" onclick="openHistoryModal()" aria-label="Buka riwayat pesanan">
-        <span aria-hidden="true">🧾</span> Riwayat
+        Riwayat Pesanan
       </button>
 
       <button class="btn-header" type="button" id="themeToggleBtn" onclick="toggleTheme()">
@@ -654,8 +1345,13 @@
         <h2 class="section-title">Pilih Game Favoritmu</h2>
       </div>
       <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="search" id="searchInput" oninput="filterGames()" placeholder="Cari game..." aria-label="Cari game">
+        <span class="search-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="11" cy="11" r="8"></circle>
+  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+</svg>
+</span>
+        <input type="search" id="searchInput" oninput="filterGames()" placeholder=" Cari di Keppin Game Store " aria-label="Cari di Keppin Game Store ">
       </div>
     </div>
     
@@ -669,7 +1365,7 @@
       </div>
 
       <div class="game-card" id="card-roblox" data-title="roblox robux" onclick="selectGame('roblox')" onkeydown="activateCard(event, 'roblox')" role="button" tabindex="0" aria-label="Pilih Roblox">
-        <img src="https://i.pinimg.com/736x/eb/20/30/eb203036af2bf931259d9c2ae254b2cd.jpg" alt="Roblox" loading="lazy">
+        <img src="https://cdn.unipin.com/images/icon_product_pages/1757435204-icon-Roblox%20corp_13_11zon.png" alt="Roblox" loading="lazy">
         <div class="game-info">
           <div class="game-title">Roblox</div>
           <div class="game-publisher">Roblox Corp</div>
@@ -684,10 +1380,10 @@
         </div>
       </div>
 
-      <div class="game-card" id="card-ff" data-title="free fire garena ff" onclick="selectGame('ff')" onkeydown="activateCard(event, 'ff')" role="button" tabindex="0" aria-label="Pilih Free Fire">
-        <img src="https://i.pinimg.com/736x/35/bb/5a/35bb5af231507e04fa472687d360b560.jpg" alt="Free Fire" loading="lazy">
+      <div class="game-card" id="card-ff" data-title="free fire max garena ff" onclick="selectGame('ff')" onkeydown="activateCard(event, 'ff')" role="button" tabindex="0" aria-label="Pilih Free Fire MAX">
+        <img src="https://cdn.unipin.com/images/icon_product_pages/1658816529-icon-icon%20ffmax.jpg" alt="Free Fire MAX" loading="lazy">
         <div class="game-info">
-          <div class="game-title">Free Fire</div>
+          <div class="game-title">Free Fire MAX</div>
           <div class="game-publisher">Garena</div>
         </div>
       </div>
@@ -696,38 +1392,68 @@
     </div>
 
     <div class="checkout-section" id="checkoutSection">
+      <div class="pubg-redeem-guide" id="pubgRedeemGuide">
+        <h4>Panduan PUBG Mobile Global - Keppin Store</h4>
+        <ol>
+          <li>Buka <a href="https://www.midasbuy.com/midasbuy/id/redeem/pubgm" target="_blank" rel="noopener noreferrer">Midasbuy PUBG Mobile</a>.</li>
+          <li>Pilih <strong>Login/Daftar</strong>, lalu masuk dengan akun Midasbuy kamu.</li>
+          <li>Masukkan <strong>Character ID</strong> PUBG Mobile Global dan kode voucher yang diterima.</li>
+          <li>Tekan <strong>OK</strong> untuk menyelesaikan redeem. UC akan masuk ke akun PUBG Mobile Global kamu.</li>
+        </ol>
+      </div>
       <div class="step-box">
         <div class="step-title">1. Masukkan User ID</div>
-        <div class="form-group">
-          <input type="text" id="userId" placeholder="Masukkan ID akun game Anda" autocomplete="username" aria-label="User ID akun game">
+        <div class="player-id-grid">
+          <div class="player-id-field form-group">
+            <label for="userId">User ID</label>
+            <input type="text" id="userId" placeholder="123456789" autocomplete="username" inputmode="numeric" maxlength="9" pattern="[0-9]{8,9}" aria-label="User ID Mobile Legends, contoh 123456789">
+          </div>
+          <div class="player-id-field form-group">
+            <label for="zoneId">Server ID (Zona ID)</label>
+            <input type="text" id="zoneId" placeholder="1234" inputmode="numeric" maxlength="5" pattern="[0-9]{4,5}" aria-label="Server ID Zona ID Mobile Legends, contoh 1234">
+          </div>
         </div>
+        <div class="player-id-help" id="playerIdHelp">Untuk menemukan ID Pengguna, klik avatar di pojok kiri atas layar, lalu buka tab <strong>Info Umum</strong>. ID Pengguna akan ditampilkan di bawah Nama Panggilan. Masukkan ID Pengguna lengkap, misalnya <strong>12345678 (1234)</strong>.</div>
+      </div>
+
+      <div class="step-box roblox-email-step" id="robloxEmailStep">
+        <div class="step-title" id="emailStepTitle">2. Masukkan Email</div>
+        <div class="form-group">
+          <input type="email" id="robloxEmail" placeholder="Masukkan email kamu" autocomplete="email" aria-label="Email untuk bukti pembayaran">
+        </div>
+        <div class="player-id-help">Email digunakan untuk menerima bukti pembayaran dan informasi pesanan.</div>
+      </div>
+
+      <div class="step-box amount-step">
+        <div class="step-title" id="amountStepTitle">3. Pilih Jumlah</div>
+        <div class="amount-category-grid" id="amountCategoryContainer"></div>
+        <h3 class="amount-product-title" id="amountProductTitle">Mobile Legends diamonds</h3>
+        <div class="amount-item-grid" id="nominalContainer"></div>
       </div>
 
       <div class="step-box">
-        <div class="step-title">2. Pilih Nominal</div>
-        <div class="nominal-grid" id="nominalContainer"></div>
-      </div>
-
-      <div class="step-box">
-        <div class="step-title">3. Metode Pembayaran</div>
+        <div class="step-title" id="paymentStepTitle">4. Metode Pembayaran</div>
         <div class="payment-grid">
           <div class="payment-card" onclick="selectPayment('QRIS', this)">QRIS</div>
           <div class="payment-card" onclick="selectPayment('DANA', this)">DANA</div>
           <div class="payment-card" onclick="selectPayment('GoPay', this)">GoPay</div>
           <div class="payment-card" onclick="selectPayment('ShopeePay', this)">ShopeePay</div>
           <div class="payment-card" onclick="selectPayment('Bank BCA', this)">Bank BCA</div>
+          <div class="payment-card dev-payment-option" id="devPaymentOption" onclick="runDevPaymentTest()">Tes Pembayaran (Dev)</div>
         </div>
       </div>
 
       <button class="btn-submit" onclick="processOrder()">Lanjutkan Pembayaran</button>
+      <button class="dev-test-button" id="devTestButton" type="button" onclick="runDevPaymentTest()">Tes Pembayaran (Dev)</button>
     </div>
   </main>
 
   <footer>
-    <div class="footer-title">Kepin Game Store</div>
+    <div class="footer-title">Keppin Game Store</div>
     <div>Top up game cepat, aman, dan terpercaya.</div>
-    <div>Hubungi kami melalui WhatsApp untuk bantuan dan konfirmasi pesanan.</div>
-    <div>&copy; 2025 Kepin Game Store. Semua hak dilindungi.</div>
+    <div>Pembayaran manual diproses setelah konfirmasi pesanan.</div>
+    <div>&copy; 2025 Keppin Game Store. Semua hak dilindungi.</div>
+    <button class="dev-access" type="button" onclick="openDevPanel()">Dev Only</button>
   </footer>
 
   <!-- Modal Pop-up Invoice -->
@@ -735,7 +1461,12 @@
     <div class="modal-box">
       <div class="modal-header">Rincian Transaksi</div>
       <div class="invoice-detail" id="invoiceContent"></div>
-      <button class="btn-submit" onclick="sendToWhatsApp()">Bayar via WhatsApp</button>
+      <div class="payment-instructions" id="paymentInstructions">
+        <strong id="paymentInstructionTitle"></strong>
+        <span class="payment-account" id="paymentAccount"></span>
+        <img id="qrisImage" src="QRIS.jpeg" alt="Kode QRIS pembayaran">
+      </div>
+      <button class="btn-submit" onclick="completePurchase()">Konfirmasi Pembayaran</button>
       <button class="btn-close" onclick="closeModal('modalInvoice')">Batal</button>
     </div>
   </div>
@@ -747,6 +1478,45 @@
       <div class="history-list" id="historyContainer"></div>
       <button class="btn-danger" id="btnClearHistory" onclick="clearHistory()">Hapus Semua Riwayat</button>
       <button class="btn-close" onclick="closeModal('modalHistory')">Tutup</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalDev">
+    <div class="modal-box">
+      <div class="dev-greeting" id="devGreeting">Halo Seila Stefani</div>
+      <div class="modal-header">Panel Dev</div>
+      <div class="dev-summary" id="devSummary"></div>
+      <div class="dev-check-title">Cek metode pembayaran</div>
+      <div class="dev-check-grid">
+        <button type="button" onclick="runDevPaymentCheck('QRIS')">Cek QRIS</button>
+        <button type="button" onclick="runDevPaymentCheck('DANA')">Cek DANA</button>
+        <button type="button" onclick="runDevPaymentCheck('GoPay')">Cek GoPay</button>
+        <button type="button" onclick="runDevPaymentCheck('ShopeePay')">Cek ShopeePay</button>
+        <button type="button" onclick="runDevPaymentCheck('Bank BCA')">Cek Bank BCA</button>
+      </div>
+      <div class="history-list" id="devOrderContainer"></div>
+      <div class="dev-actions">
+        <button type="button" class="dev-logout" onclick="devLogout()">Logout Dev</button>
+        <button type="button" class="dev-clear" onclick="clearDevHistory()">Hapus Riwayat</button>
+        <button type="button" onclick="closeModal('modalDev')">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalDevLogin">
+    <div class="modal-box">
+      <div class="modal-header">Login Dev</div>
+      <form class="dev-login-form" onsubmit="loginDev(event)">
+        <label for="devUsername">ID Dev
+          <input id="devUsername" type="text" autocomplete="username" required>
+        </label>
+        <label for="devPassword">Password
+          <input id="devPassword" type="password" autocomplete="current-password" required>
+        </label>
+        <div class="dev-login-error" id="devLoginError" role="alert"></div>
+        <button class="btn-submit" type="submit">Masuk</button>
+        <button class="btn-close" type="button" onclick="closeModal('modalDevLogin')">Batal</button>
+      </form>
     </div>
   </div>
 
@@ -782,6 +1552,7 @@
       themeText.style.textAlign = 'center';
 
       if (theme === 'light') {
+        themeIcon.textContent = '☼';
         themeText.textContent = 'Light';
         themeIcon.setAttribute('aria-hidden', 'true');
         themeText.setAttribute('aria-label', 'Light theme aktif');
@@ -791,6 +1562,7 @@
           themeButton.dataset.theme = 'light';
         }
       } else {
+        themeIcon.textContent = '◐';
         themeText.textContent = 'Dark';
         themeIcon.setAttribute('aria-hidden', 'true');
         themeText.setAttribute('aria-label', 'Dark theme aktif');
@@ -805,15 +1577,22 @@
     initTheme();
 
     const catalog = {
-      ml: { title: "Mobile Legends", items: [{ name: "86 Diamonds", price: 20000 }, { name: "172 Diamonds", price: 40000 }, { name: "257 Diamonds", price: 60000 }, { name: "Weekly Pass", price: 28000 }] },
-      roblox: { title: "Roblox", items: [{ name: "80 Robux", price: 15000 }, { name: "400 Robux", price: 75000 }, { name: "800 Robux", price: 140000 }] },
-      pubg: { title: "PUBG Mobile", items: [{ name: "60 UC", price: 17893 }, { name: "325 UC", price: 89466 }, { name: "660 UC", price: 178932 }, { name: "1.800 UC", price: 447330 }, { name: "3.850 UC", price: 894660 }, { name: "8.100 UC", price: 1789320 }, { name: "16.200 UC", price: 3578640 }, { name: "24.300 UC", price: 5367960 }, { name: "32.400 UC", price: 7157280 }, { name: "40.500 UC", price: 8946600 }] },
-      ff: { title: "Free Fire", items: [{ name: "140 Diamonds", price: 20000 }, { name: "355 Diamonds", price: 50000 }, { name: "720 Diamonds", price: 100000 }] }
+      ml: { title: "Mobile Legends", image: "https://i.pinimg.com/736x/ea/1e/d1/ea1ed14327f20b2037fc7aea3ac523d4.jpg", categories: [{ name: "First Recharge: 2X Diamonds", icon: "💎", itemIndexes: [21, 22, 23, 24] }, { name: "Weekly Elite Bundle", icon: "🎁", itemIndexes: [25] }, { name: "Monthly Epic Bundle", icon: "🧚", itemIndexes: [26] }, { name: "Mobile Legends diamonds", icon: "🔔", itemIndexes: [27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41] }, { name: "Mobile Legends twilight pass", icon: "🌌", itemIndexes: [42] }, { name: "Mobile Legends Weekly Diamonds", icon: "🎟️", itemIndexes: [20] }], items: [{ name: "5 Diamonds", price: 1500 }, { name: "12 Diamonds", price: 3500 }, { name: "19 Diamonds", price: 5500 }, { name: "28 Diamonds", price: 8000 }, { name: "36 Diamonds", price: 10000 }, { name: "44 Diamonds", price: 12000 }, { name: "59 Diamonds", price: 16000 }, { name: "85 Diamonds", price: 23000 }, { name: "170 Diamonds", price: 45000 }, { name: "257 Diamonds", price: 67000 }, { name: "344 Diamonds", price: 89000 }, { name: "429 Diamonds", price: 111000 }, { name: "514 Diamonds", price: 133000 }, { name: "706 Diamonds", price: 178000 }, { name: "878 Diamonds", price: 222000 }, { name: "1050 Diamonds", price: 265000 }, { name: "1412 Diamonds", price: 355000 }, { name: "2195 Diamonds", price: 550000 }, { name: "3688 Diamonds", price: 925000 }, { name: "5532 Diamonds", price: 1385000 }, { name: "Weekly Diamond Pass", price: 29000 }, { name: "First Recharge Double Bonus (50 + 50)", price: 17164 }, { name: "First Recharge Double Bonus (150 + 150)", price: 51839 }, { name: "First Recharge Double Bonus (250 + 250)", price: 86514 }, { name: "First Recharge Double Bonus (500 + 500)", price: 173202 }, { name: "Weekly Elite Bundle", price: 17164 }, { name: "Monthly Epic Bundle", price: 86514 }, { name: "5 Diamonds", price: 1734 }, { name: "11 + 1 Diamonds", price: 3814 }, { name: "17 + 2 Diamonds", price: 5895 }, { name: "25 + 3 Diamonds", price: 8669 }, { name: "40 + 4 Diamonds", price: 13870 }, { name: "53 + 6 Diamonds", price: 18378 }, { name: "77 + 8 Diamonds", price: 26700 }, { name: "154 + 16 Diamonds", price: 53400 }, { name: "217 + 23 Diamonds", price: 75245 }, { name: "256 + 40 Diamonds", price: 88768 }, { name: "367 + 41 Diamonds", price: 127257 }, { name: "503 + 65 Diamonds", price: 174415 }, { name: "774 + 101 Diamonds", price: 268385 }, { name: "1708 + 302 Diamonds", price: 592249 }, { name: "4003 + 827 Diamonds", price: 1388040 }, { name: "Twilight Pass", price: 173202 }] },
+      roblox: { title: "Roblox Gift Card (ID)", subtitle: "Tukarkan kode untuk Robux atau Roblox Premium", image: "https://cdn.unipin.com/images/icon_product_pages/1757435204-icon-Roblox%20corp_13_11zon.png", items: [{ name: "Roblox Gift Card IDR 50.000", price: 48440 }, { name: "Roblox Gift Card IDR 65.000", price: 62970 }, { name: "Roblox Gift Card IDR 100.000", price: 96500 }, { name: "Roblox Gift Card IDR 200.000", price: 193000 }, { name: "Roblox Gift Card IDR 500.000", price: 479000 }] },
+      pubg: { title: "PUBG Mobile", image: "https://i.pinimg.com/736x/d8/24/11/d82411fa20d0886599a37b451342c013.jpg", items: [{ name: "60 UC", price: 17893 }, { name: "325 UC", price: 89466 }, { name: "660 UC", price: 178932 }, { name: "1.800 UC", price: 447330 }, { name: "3.850 UC", price: 894660 }, { name: "8.100 UC", price: 1789320 }, { name: "16.200 UC", price: 3578640 }, { name: "24.300 UC", price: 5367960 }, { name: "32.400 UC", price: 7157280 }, { name: "40.500 UC", price: 8946600 }] },
+      ff: { title: "Free Fire MAX", subtitle: "Top up Diamonds Free Fire MAX", image: "https://cdn.unipin.com/images/icon_product_pages/1658816529-icon-icon%20ffmax.jpg", items: [{ name: "5 Free Fire Diamonds", price: 1000 }, { name: "12 Free Fire Diamonds", price: 2000 }, { name: "50 Free Fire Diamonds", price: 8000 }, { name: "70 Free Fire Diamonds", price: 10000 }, { name: "140 Free Fire Diamonds", price: 20000 }, { name: "355 Free Fire Diamonds", price: 50000 }, { name: "720 Free Fire Diamonds", price: 100000 }, { name: "1,450 Free Fire Diamonds", price: 200000 }, { name: "2,180 Free Fire Diamonds", price: 300000 }, { name: "3,640 Free Fire Diamonds", price: 500000 }, { name: "7,290 Free Fire Diamonds", price: 1000000 }, { name: "36,500 Free Fire Diamonds", price: 5000000 }, { name: "73,100 Free Fire Diamonds", price: 10000000 }] }
     };
+
+    // Isi setelah Google Apps Script selesai di-deploy sebagai Web App.
+    const REMOTE_API_URL = 'https://script.google.com/macros/s/AKfycbyCydEEZ6lkUfx0LGZJWf8yj1zPPlMJNidYiCpg7BGmz62XTz_aWezJsPIH4gihKym_iA/exec';
+    const REMOTE_API_KEY = 'seicut';
+
+    catalog.ml.items[20].price = 34502; 
 
     let selectedGameKey = '';
     let selectedItem = null;
     let selectedPayment = '';
+    let devTestMode = false;
 
     function filterGames() {
       const input = document.getElementById('searchInput').value.toLowerCase();
@@ -841,22 +1620,96 @@
       document.querySelectorAll('.game-card').forEach(card => card.classList.remove('active'));
       document.getElementById('card-' + gameKey).classList.add('active');
       document.getElementById('checkoutSection').style.display = 'block';
+      const isRoblox = gameKey === 'roblox';
+      const isFreeFire = gameKey === 'ff';
+      document.getElementById('pubgRedeemGuide').classList.toggle('visible', gameKey === 'pubg');
+      document.querySelector('.player-id-grid').closest('.step-box').style.display = isRoblox ? 'none' : 'block';
+      document.querySelector('#zoneId').closest('.player-id-field').style.display = isFreeFire || isRoblox ? 'none' : 'block';
+      document.getElementById('userId').setAttribute('maxlength', isFreeFire ? '20' : '9');
+      document.getElementById('userId').setAttribute('pattern', isFreeFire ? '[0-9]+' : '[0-9]{8,9}');
+      document.getElementById('userId').previousElementSibling.textContent = isFreeFire ? 'ID Free Fire MAX' : 'User ID';
+      document.getElementById('playerIdHelp').innerHTML = isFreeFire
+        ? 'Untuk menemukan ID Free Fire MAX, buka profil akun kamu dan salin ID pemain yang tertera.'
+        : 'Untuk menemukan ID Pengguna, klik avatar di pojok kiri atas layar, lalu buka tab <strong>Info Umum</strong>. ID Pengguna akan ditampilkan di bawah Nama Panggilan. Masukkan ID Pengguna lengkap, misalnya <strong>12345678 (1234)</strong>.';
+      document.getElementById('robloxEmailStep').style.display = 'block';
+      document.getElementById('emailStepTitle').textContent = isRoblox ? '1. Masukkan Email' : '2. Masukkan Email';
+      document.getElementById('amountStepTitle').textContent = isRoblox ? '2. Pilih Jumlah' : '3. Pilih Jumlah';
+      document.getElementById('paymentStepTitle').textContent = isRoblox ? '3. Metode Pembayaran' : '4. Metode Pembayaran';
+
+      const product = catalog[gameKey];
+      let banner = document.getElementById('productBanner');
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'productBanner';
+        banner.className = 'product-banner';
+        document.getElementById('checkoutSection').prepend(banner);
+      }
+      banner.innerHTML = `
+        ${product.image ? `<img class="product-banner-icon" src="${product.image}" alt="${product.title}" loading="lazy">` : ''}
+        <div><h3>${product.title}</h3><p>${product.subtitle || 'Pilih nominal top up yang kamu inginkan'}</p></div>
+      `;
+
+      const categories = product.categories || [{
+        name: product.title,
+        icon: '🎮',
+        itemIndexes: product.items.map((item, index) => index)
+      }];
+      const categoryContainer = document.getElementById('amountCategoryContainer');
+      categoryContainer.innerHTML = '';
+
+      categories.forEach((category, categoryIndex) => {
+        const categoryEl = document.createElement('div');
+        categoryEl.className = 'amount-category';
+        categoryEl.setAttribute('role', 'button');
+        categoryEl.setAttribute('tabindex', '0');
+        categoryEl.innerHTML = `
+          <span class="amount-category-info">${category.name}</span>
+          ${category.info ? '<span class="amount-info" aria-label="Informasi">i</span>' : ''}
+        `;
+        categoryEl.onclick = () => selectAmountCategory(gameKey, categoryIndex);
+        categoryEl.onkeydown = event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            selectAmountCategory(gameKey, categoryIndex);
+          }
+        };
+        categoryContainer.appendChild(categoryEl);
+      });
+
+      const initialCategory = gameKey === 'ml' ? categories.length - 1 : 0;
+      selectAmountCategory(gameKey, initialCategory);
+      updateDevTestButton();
+
+      document.getElementById('checkoutSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function selectAmountCategory(gameKey, categoryIndex) {
+      const product = catalog[gameKey];
+      const categories = product.categories || [{
+        name: product.title,
+        itemIndexes: product.items.map((item, index) => index)
+      }];
+      const category = categories[categoryIndex];
+      selectedItem = null;
+      const categoryCards = document.querySelectorAll('.amount-category');
+      categoryCards.forEach((card, index) => card.classList.toggle('active', index === categoryIndex));
+      document.getElementById('amountProductTitle').textContent = category.name;
 
       const nominalContainer = document.getElementById('nominalContainer');
       nominalContainer.innerHTML = '';
-
-      catalog[gameKey].items.forEach(item => {
+      category.itemIndexes.forEach(itemIndex => {
+        const item = product.items[itemIndex];
         const itemEl = document.createElement('div');
-        itemEl.className = 'item-card';
+        itemEl.className = 'item-card amount-item';
         itemEl.innerHTML = `
-          <div class="item-name">${item.name}</div>
-          <div class="item-price">Rp ${item.price.toLocaleString('id-ID')}</div>
+          <span class="amount-item-copy">
+            <span class="item-name">${item.name}</span>
+            <span class="item-price">Rp ${item.price.toLocaleString('id-ID')}</span>
+          </span>
         `;
         itemEl.onclick = () => selectNominal(item, itemEl);
         nominalContainer.appendChild(itemEl);
       });
-
-      document.getElementById('checkoutSection').scrollIntoView({ behavior: 'smooth' });
     }
 
     function selectNominal(itemObj, element) {
@@ -869,19 +1722,43 @@
       selectedPayment = paymentName;
       document.querySelectorAll('.payment-card').forEach(card => card.classList.remove('active'));
       element.classList.add('active');
+      showPaymentDetails(paymentName);
+    }
+
+    function showPaymentDetails(paymentName) {
+      const paymentDetails = {
+        QRIS: { title: 'Scan QRIS untuk membayar', account: '', showQr: true },
+        'Bank BCA': { title: 'Transfer ke rekening Bank BCA', account: '2831936080', showQr: false },
+        GoPay: { title: 'Kirim pembayaran ke GoPay', account: '082112925622', showQr: false },
+        ShopeePay: { title: 'Kirim pembayaran ke ShopeePay', account: '082112925622', showQr: false },
+        DANA: { title: 'Kirim pembayaran ke DANA', account: '082112925622', showQr: false }
+      }[paymentName];
+
+      const instructions = document.getElementById('paymentInstructions');
+      document.getElementById('paymentInstructionTitle').textContent = paymentDetails.title;
+      document.getElementById('paymentAccount').textContent = paymentDetails.account;
+      document.getElementById('qrisImage').style.display = paymentDetails.showQr ? 'block' : 'none';
+      instructions.classList.add('visible');
     }
 
     function processOrder() {
+      devTestMode = false;
       const userId = document.getElementById('userId').value.trim();
+      const zoneId = document.getElementById('zoneId').value.trim();
+      const robloxEmail = document.getElementById('robloxEmail').value.trim();
+      const isRoblox = selectedGameKey === 'roblox';
+      const isFreeFire = selectedGameKey === 'ff';
 
       if (!selectedGameKey) return alert('Pilih Game terlebih dahulu!');
-      if (!userId) return alert('Isi User ID Akun Anda!');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(robloxEmail)) return alert('Masukkan email yang valid!');
+      if (!isRoblox && !/^\d+$/.test(userId)) return alert('ID Pengguna harus berupa angka!');
+      if (!isRoblox && !isFreeFire && !/^\d{4,5}$/.test(zoneId)) return alert('Server ID (Zona ID) harus berupa 4 sampai 5 angka!');
       if (!selectedItem) return alert('Pilih Nominal Voucher!');
       if (!selectedPayment) return alert('Pilih Metode Pembayaran!');
 
       const invoiceHTML = `
         <div><span>Game:</span> <b>${catalog[selectedGameKey].title}</b></div>
-        <div><span>User ID:</span> <b>${userId}</b></div>
+        ${isRoblox ? `<div><span>Email:</span> <b>${robloxEmail}</b></div>` : `<div><span>ID Pengguna:</span> <b>${userId}</b></div>${isFreeFire ? '' : `<div><span>ID Zona:</span> <b>${zoneId}</b></div>`}<div><span>Email:</span> <b>${robloxEmail}</b></div>`}
         <div><span>Item:</span> <b>${selectedItem.name}</b></div>
         <div><span>Pembayaran:</span> <b>${selectedPayment}</b></div>
         <div><span>Total Tagihan:</span> <b style="color:var(--accent-price);">Rp ${selectedItem.price.toLocaleString('id-ID')}</b></div>
@@ -891,42 +1768,135 @@
       document.getElementById('modalInvoice').style.display = 'flex';
     }
 
+    function isDevSessionActive() {
+      const unlockedAt = Number(sessionStorage.getItem('devUnlockedAt'));
+      return unlockedAt && Date.now() - unlockedAt < 30 * 60 * 1000;
+    }
+
+    function updateDevTestButton() {
+      const button = document.getElementById('devTestButton');
+      if (button) button.classList.toggle('visible', Boolean(isDevSessionActive()));
+      const paymentOption = document.getElementById('devPaymentOption');
+      if (paymentOption) paymentOption.classList.toggle('visible', Boolean(isDevSessionActive()));
+    }
+
+    function runDevPaymentTest() {
+      if (!isDevSessionActive()) {
+        updateDevTestButton();
+        alert('Silakan login ke Panel Dev terlebih dahulu.');
+        return;
+      }
+
+      const testProduct = catalog[selectedGameKey] || catalog.ml;
+      const testItem = testProduct.items[0];
+      devTestMode = true;
+      document.getElementById('invoiceContent').innerHTML = `
+        <div><span>Mode:</span> <b>Dev Test</b></div>
+        <div><span>Game:</span> <b>${testProduct.title}</b></div>
+        <div><span>User ID:</span> <b>-</b></div>
+        <div><span>Item:</span> <b>${testItem.name}</b></div>
+        <div><span>Pembayaran:</span> <b>Simulasi</b></div>
+        <div><span>Total Tagihan:</span> <b style="color:var(--accent-price);">Rp ${testItem.price.toLocaleString('id-ID')}</b></div>
+      `;
+      document.getElementById('paymentInstructions').classList.remove('visible');
+      document.getElementById('modalInvoice').style.display = 'flex';
+    }
+
+    function runDevPaymentCheck(paymentName) {
+      if (!isDevSessionActive()) {
+        alert('Silakan login ke Panel Dev terlebih dahulu.');
+        closeModal('modalDev');
+        return;
+      }
+
+      const testProduct = catalog[selectedGameKey] || catalog.ml;
+      const testItem = testProduct.items[0];
+      devTestMode = true;
+      showPaymentDetails(paymentName);
+      document.getElementById('invoiceContent').innerHTML = `
+        <div><span>Mode:</span> <b>Dev Payment Check</b></div>
+        <div><span>Metode:</span> <b>${paymentName}</b></div>
+        <div><span>Tujuan:</span> <b>Pemeriksaan tampilan pembayaran</b></div>
+        <div><span>Contoh Total:</span> <b style="color:var(--accent-price);">Rp ${testItem.price.toLocaleString('id-ID')}</b></div>
+      `;
+      closeModal('modalDev');
+      document.getElementById('modalInvoice').style.display = 'flex';
+    }
+
     function closeModal(modalId) {
       document.getElementById(modalId).style.display = 'none';
     }
 
-    function sendToWhatsApp() {
-      const userId = document.getElementById('userId').value.trim();
-      
-      // NOMOR WHATSAPP ANDA:
-      const adminWA = "6282112925622";
+    function completePurchase() {
+      if (devTestMode) {
+        devTestMode = false;
+        closeModal('modalInvoice');
+        showPurchaseNotification('Tes pembayaran Dev berhasil. Tidak ada pesanan yang disimpan.');
+        return;
+      }
 
-      // 1. Simpan Transaksi ke LocalStorage pembeli
+      const userId = document.getElementById('userId').value.trim();
+      const zoneId = document.getElementById('zoneId').value.trim();
+
       saveOrderToHistory({
         game: catalog[selectedGameKey].title,
         userId: userId,
+        zoneId: zoneId,
+        email: document.getElementById('robloxEmail').value.trim(),
         item: selectedItem.name,
         payment: selectedPayment,
         price: selectedItem.price,
+        status: 'Menunggu Konfirmasi',
         date: new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })
       });
 
-      // 2. Langsung Buka WhatsApp
-      const text = `Halo Admin, saya ingin konfirmasi pesanan:%0A` +
-                   `- Game: ${catalog[selectedGameKey].title}%0A` +
-                   `- User ID: ${userId}%0A` +
-                   `- Item: ${selectedItem.name}%0A` +
-                   `- Pembayaran: ${selectedPayment}%0A` +
-                   `- Total: Rp ${selectedItem.price.toLocaleString('id-ID')}`;
-
-      window.open(`https://wa.me/${adminWA}?text=${text}`, '_blank');
       closeModal('modalInvoice');
+      showPurchaseNotification('Pesanan tersimpan dan sedang dikirim ke admin.');
+    }
+
+    function showPurchaseNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'purchase-notification';
+      notification.setAttribute('role', 'status');
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 4500);
     }
 
     function saveOrderToHistory(orderData) {
       let history = JSON.parse(localStorage.getItem('orderHistory')) || [];
       history.unshift(orderData);
       localStorage.setItem('orderHistory', JSON.stringify(history));
+      syncOrderToGoogleSheets(orderData);
+    }
+
+    async function syncOrderToGoogleSheets(orderData) {
+      if (!REMOTE_API_URL || !REMOTE_API_KEY) return;
+      try {
+        await fetch(REMOTE_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ ...orderData, key: REMOTE_API_KEY })
+        });
+      } catch (error) {
+        console.warn('Pesanan tetap tersimpan lokal; sinkronisasi online gagal.', error);
+      }
+    }
+
+    async function fetchRemoteOrders() {
+      if (!REMOTE_API_URL || !REMOTE_API_KEY) return null;
+      try {
+        const response = await fetch(`${REMOTE_API_URL}?key=${encodeURIComponent(REMOTE_API_KEY)}`);
+        const result = await response.json();
+        if (!result.ok || !Array.isArray(result.orders)) return null;
+        return result.orders.map(order => ({
+          ...order,
+          price: Number(order.price) || 0
+        }));
+      } catch (error) {
+        console.warn('Pesanan online tidak dapat dimuat.', error);
+        return null;
+      }
     }
 
     function openHistoryModal() {
@@ -945,9 +1915,10 @@
               <span>${item.game}</span>
               <span style="color:var(--accent-price)">Rp ${item.price.toLocaleString('id-ID')}</span>
             </div>
-            <div>${item.item} • ID: <b>${item.userId}</b></div>
+            <div>${item.item}</div>
+            <div class="history-id">User ID ${item.userId} · Zona ${item.zoneId || '-'}</div>
             <div class="history-date">Metode: ${item.payment} | ${item.date}</div>
-            <span class="history-status">Menunggu Konfirmasi</span>
+            <span class="history-status">${item.status || 'Menunggu Konfirmasi'}</span>
           </div>
         `).join('');
       }
@@ -960,6 +1931,145 @@
         localStorage.removeItem('orderHistory');
         openHistoryModal();
       }
+    }
+
+    async function hashDevLogin(username, password) {
+      const bytes = new TextEncoder().encode(`${username}:${password}`);
+      const digest = await crypto.subtle.digest('SHA-256', bytes);
+      return Array.from(new Uint8Array(digest))
+        .map(byte => byte.toString(16).padStart(2, '0'))
+        .join('');
+    }
+
+    async function loginDev(event) {
+      event.preventDefault();
+      const username = document.getElementById('devUsername').value.trim();
+      const password = document.getElementById('devPassword').value;
+      const error = document.getElementById('devLoginError');
+      const accounts = {
+        'b95f3be7de77e67f9e3528cb3cb71cba2d2c0186461beea6c224dda597458c29': 'female',
+        'bbbf8425ebed7e951b02a8b039cd544fa6e013df54c05182337f8dc1105967e1': 'male'
+      };
+
+      if (!window.crypto?.subtle) {
+        error.textContent = 'Browser tidak mendukung login aman.';
+        return;
+      }
+
+      const role = accounts[await hashDevLogin(username, password)];
+      if (!role) {
+        error.textContent = 'ID atau password Dev salah.';
+        return;
+      }
+
+      sessionStorage.setItem('devUnlockedAt', String(Date.now()));
+      sessionStorage.setItem('devRole', role);
+      document.getElementById('devUsername').value = '';
+      document.getElementById('devPassword').value = '';
+      error.textContent = '';
+      closeModal('modalDevLogin');
+      openDevPanel();
+    }
+
+    async function openDevPanel() {
+      const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+      if (!isLocal) {
+        alert('Panel Dev hanya tersedia saat website dijalankan secara lokal.');
+        return;
+      }
+
+      const unlockedAt = Number(sessionStorage.getItem('devUnlockedAt'));
+      const sessionIsValid = unlockedAt && Date.now() - unlockedAt < 30 * 60 * 1000;
+      if (!sessionIsValid) {
+        document.getElementById('devLoginError').textContent = '';
+        document.getElementById('modalDevLogin').style.display = 'flex';
+        return;
+      }
+
+      updateDevTestButton();
+      document.getElementById('devGreeting').textContent = sessionStorage.getItem('devRole') === 'female'
+        ? 'Halo Seila Stefani'
+        : 'Halo Dev Rexra';
+      const remoteOrders = await fetchRemoteOrders();
+      const orders = remoteOrders || JSON.parse(localStorage.getItem('orderHistory')) || [];
+      const container = document.getElementById('devOrderContainer');
+      document.getElementById('devSummary').textContent = `${orders.length} pesanan tersimpan di perangkat ini.`;
+
+      if (orders.length === 0) {
+        container.innerHTML = '<div class="empty-history">Belum ada pesanan.</div>';
+      } else {
+        container.innerHTML = orders.map(order => `
+          <div class="history-card">
+            <div class="history-top">
+              <span>${order.game}</span>
+              <span style="color:var(--accent-price)">Rp ${order.price.toLocaleString('id-ID')}</span>
+            </div>
+            <div>Item: <b>${order.item}</b></div>
+            <div>ID Pengguna: <b>${order.userId}</b></div>
+            <div>ID Zona: <b>${order.zoneId || '-'}</b></div>
+            <div>Email: <b>${order.email || '-'}</b></div>
+            <div class="history-date">${order.payment} | ${order.date}</div>
+            <span class="history-status">${order.status || 'Menunggu Konfirmasi'}</span>
+            <select class="dev-edit-select" aria-label="Edit status pesanan" onchange="editDevOrder(${orders.indexOf(order)}, this.value)">
+              <option value="Menunggu Konfirmasi" ${order.status === 'Menunggu Konfirmasi' || !order.status ? 'selected' : ''}>Menunggu Konfirmasi</option>
+              <option value="Lunas" ${order.status === 'Lunas' ? 'selected' : ''}>Lunas</option>
+              <option value="Dibatalkan" ${order.status === 'Dibatalkan' ? 'selected' : ''}>Dibatalkan</option>
+            </select>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('modalDev').style.display = 'flex';
+    }
+
+    function devLogout() {
+      sessionStorage.removeItem('devUnlockedAt');
+      sessionStorage.removeItem('devRole');
+      updateDevTestButton();
+      closeModal('modalDev');
+      showPurchaseNotification('Panel Dev berhasil logout.');
+    }
+
+    function clearDevHistory() {
+      if (!confirm('Hapus semua riwayat pesanan di perangkat ini?')) return;
+      localStorage.removeItem('orderHistory');
+      showPurchaseNotification('Semua riwayat pesanan telah dihapus.');
+      openDevPanel();
+    }
+
+    function confirmPayment(orderIndex) {
+      const unlockedAt = Number(sessionStorage.getItem('devUnlockedAt'));
+      const sessionIsValid = unlockedAt && Date.now() - unlockedAt < 30 * 60 * 1000;
+      if (!sessionIsValid) {
+        alert('Sesi Dev sudah berakhir. Silakan login kembali.');
+        closeModal('modalDev');
+        return;
+      }
+
+      const orders = JSON.parse(localStorage.getItem('orderHistory')) || [];
+      if (!orders[orderIndex]) return;
+
+      orders[orderIndex].status = 'Lunas';
+      orders[orderIndex].confirmedAt = new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
+      localStorage.setItem('orderHistory', JSON.stringify(orders));
+      showPurchaseNotification('Pembayaran berhasil dikonfirmasi.');
+      openDevPanel();
+    }
+
+    function editDevOrder(orderIndex, status) {
+      if (!isDevSessionActive()) {
+        alert('Sesi Dev sudah berakhir. Silakan login kembali.');
+        closeModal('modalDev');
+        return;
+      }
+
+      const orders = JSON.parse(localStorage.getItem('orderHistory')) || [];
+      if (!orders[orderIndex]) return;
+      orders[orderIndex].status = status;
+      orders[orderIndex].updatedAt = new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
+      localStorage.setItem('orderHistory', JSON.stringify(orders));
+      showPurchaseNotification('Status pesanan berhasil diperbarui.');
+      openDevPanel();
     }
   </script>
 </body>
