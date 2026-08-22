@@ -731,14 +731,14 @@
       border: 1px solid var(--border-color);
     }
 
-    .invoice-detail div {
+    .invoice-detail > div:not(.invoice-amount-box) {
       display: flex;
       justify-content: space-between;
       border-bottom: 1px dashed var(--border-color);
       padding: 8px 0;
     }
 
-    .invoice-detail div:last-child {
+    .invoice-detail > div:not(.invoice-amount-box):last-child {
       border-bottom: none;
     }
 
@@ -1677,8 +1677,9 @@
     };
 
     // Isi setelah Google Apps Script selesai di-deploy sebagai Web App.
-    const REMOTE_API_URL = 'https://script.google.com/macros/s/AKfycby0p4coM7SDYEC6zaW0mdAOUDE7Ek0aFwV5AI9I8qMBbPek1O908K5IzM846W13z_ju-g/exec';
-    const REMOTE_API_KEY = 'KEPPIN_STORE_SECRET_2026'; 
+    const REMOTE_API_URL = 'https://script.google.com/macros/s/AKfycbw9Ka_5w7hOyqBjwzJe5twVRm0pF0_jjBhRqRZtSb34N1-QZzkXDteoxgs3FALas2wW8Q/exec';
+    const REMOTE_API_KEY = 'Seicut';
+    
 
     let selectedGameKey = '';
     let selectedItem = null;
@@ -1892,16 +1893,15 @@
       const isFreeFire = selectedGameKey === 'ff';
 
       if (!selectedGameKey) return alert('Pilih Game terlebih dahulu!');
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(robloxEmail)) return alert('Masukkan email yang valid!');
+      if (isRoblox && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(robloxEmail)) return alert('Masukkan email yang valid!');
       if (!isRoblox && !/^\d+$/.test(userId)) return alert('ID Pengguna harus berupa angka!');
       if (!isRoblox && !isFreeFire && !/^\d{4,5}$/.test(zoneId)) return alert('Server ID (Zona ID) harus berupa 4 sampai 5 angka!');
       if (!selectedItem) return alert('Pilih Nominal Voucher!');
       if (!selectedPayment) return alert('Pilih Metode Pembayaran!');
 
-      // Generate 3 digit kode unik (110 - 999)
-      const uniqueCode = Math.floor(Math.random() * 889) + 111;
       const basePrice = Number(selectedItem.price);
-      const totalAmount = basePrice + uniqueCode;
+      const uniqueCode = 0;
+      const totalAmount = basePrice;
       const orderId = 'KP' + Math.floor(100000 + Math.random() * 900000);
       const orderDate = new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
 
@@ -1939,7 +1939,7 @@
         <div><span>Item:</span> <b>${currentOrder.item}</b></div>
         <div><span>Metode:</span> <b>${currentOrder.payment}</b></div>
         <div><span>Harga Item:</span> <span>Rp ${currentOrder.basePrice.toLocaleString('id-ID')}</span></div>
-        <div><span>Kode Unik Verifikasi:</span> <b class="unique-code-tag">+ Rp ${currentOrder.uniqueCode}</b></div>
+        ${currentOrder.uniqueCode > 0 ? `<div><span>Kode Unik Verifikasi:</span> <b class="unique-code-tag">+ Rp ${currentOrder.uniqueCode.toLocaleString('id-ID')}</b></div>` : ''}
         <div class="invoice-amount-box">
           <span style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Total yang wajib ditransfer</span>
           <div class="invoice-total-amount">
@@ -1949,7 +1949,7 @@
             </button>
           </div>
           <div class="invoice-warning-note">
-            ⚠️ <strong>PENTING:</strong> Wajib transfer tepat <strong>Rp ${currentOrder.price.toLocaleString('id-ID')}</strong> (hingga 3 digit terakhir) agar pembayaran terdeteksi & selesai <strong>otomatis</strong>.
+            ⚠️ <strong>PENTING:</strong> Transfer sesuai nominal tepat <strong>Rp ${currentOrder.price.toLocaleString('id-ID')}</strong>. Pesanan diproses setelah pembayaran dikonfirmasi.
           </div>
         </div>
       `;
@@ -1958,9 +1958,10 @@
       document.getElementById('invoiceContent').innerHTML = invoiceHTML;
       document.getElementById('paymentLiveChecker').style.display = 'flex';
       document.getElementById('paymentLiveChecker').className = 'payment-live-status';
-      document.getElementById('paymentLiveText').textContent = 'Menunggu transfer masuk... Mengecek mutasi otomatis';
+      document.getElementById('paymentLiveText').textContent = 'Menunggu pembayaran dikonfirmasi admin...';
       document.getElementById('btnCheckPayment').style.display = 'flex';
-      document.getElementById('btnManualConfirm').style.display = 'block';
+      const manualBtn = document.getElementById('btnManualConfirm');
+      if (manualBtn) manualBtn.style.display = 'block';
       document.getElementById('modalInvoice').style.display = 'flex';
     }
 
@@ -1984,11 +1985,11 @@
       }
 
       try {
-        const checkUrl = `${REMOTE_API_URL}?key=${encodeURIComponent(REMOTE_API_KEY)}&action=checkPayment&orderId=${encodeURIComponent(currentOrder.orderId)}&amount=${encodeURIComponent(currentOrder.price)}`;
+        const checkUrl = `${REMOTE_API_URL}?apiKey=${encodeURIComponent(REMOTE_API_KEY)}&action=checkStatus&orderId=${encodeURIComponent(currentOrder.orderId)}`;
         const response = await fetch(checkUrl);
         const result = await response.json();
 
-        if (result.ok && result.paid) {
+        if (result.status === 'success' && result.orderStatus === 'Lunas') {
           handlePaymentSuccess();
         } else if (isManualClick) {
           showPurchaseNotification(result.message || 'Pembayaran belum terdeteksi. Pastikan nominal transfer sudah sesuai.');
@@ -2055,7 +2056,7 @@
       if (paymentOption) paymentOption.classList.toggle('visible', Boolean(isDevSessionActive()));
     }
 
-    function runDevPaymentTest() {
+    async function runDevPaymentTest() {
       if (!isDevSessionActive()) {
         updateDevTestButton();
         alert('Silakan login ke Panel Dev terlebih dahulu.');
@@ -2065,8 +2066,31 @@
       const testProduct = catalog[selectedGameKey] || catalog.ml;
       const testItem = testProduct.items[0];
       devTestMode = true;
+      currentOrder = {
+        orderId: 'DEV-' + Date.now(),
+        game: testProduct.title,
+        userId: 'DEV-TEST',
+        zoneId: '-',
+        email: 'dev-test@local',
+        item: testItem.name,
+        payment: 'Dev Test',
+        basePrice: testItem.price,
+        uniqueCode: 0,
+        price: testItem.price,
+        status: 'Dev Test',
+        date: new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })
+      };
+
+      let savedOnline = true;
+      try {
+        await saveOrderToHistory(currentOrder);
+      } catch (error) {
+        savedOnline = false;
+        showPurchaseNotification('Pesanan uji disimpan lokal, tetapi notifikasi Gmail belum terkirim.');
+      }
       document.getElementById('invoiceContent').innerHTML = `
-        <div><span>Mode:</span> <b>Dev Test</b></div>
+        <div><span>Mode:</span> <b>Dev Test — Pesanan disimpan</b></div>
+        <div><span>ID Pesanan:</span> <b>${currentOrder.orderId}</b></div>
         <div><span>Game:</span> <b>${testProduct.title}</b></div>
         <div><span>User ID:</span> <b>-</b></div>
         <div><span>Item:</span> <b>${testItem.name}</b></div>
@@ -2080,6 +2104,7 @@
       const waBtn = document.getElementById('btnWhatsAppConfirm');
       if (waBtn) waBtn.style.display = 'none';
       document.getElementById('modalInvoice').style.display = 'flex';
+      if (savedOnline) showPurchaseNotification('Pesanan uji dibuat tanpa data pemain dan dikirim ke Gmail admin.');
     }
 
     function runDevPaymentCheck(paymentName) {
@@ -2147,17 +2172,20 @@
       history = history.filter(item => item.orderId !== orderData.orderId);
       history.unshift(orderData);
       localStorage.setItem('orderHistory', JSON.stringify(history));
-      syncOrderToGoogleSheets(orderData);
+      return syncOrderToGoogleSheets(orderData);
     }
 
     async function syncOrderToGoogleSheets(orderData) {
       if (!REMOTE_API_URL || !REMOTE_API_KEY) return;
       try {
-        await fetch(REMOTE_API_URL, {
+        const response = await fetch(REMOTE_API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ ...orderData, key: REMOTE_API_KEY })
+          body: JSON.stringify({ ...orderData, apiKey: REMOTE_API_KEY, action: 'createOrder' })
         });
+        const result = await response.json();
+        if (result.status !== 'success') throw new Error(result.message || 'Sinkronisasi pesanan gagal.');
+        return result;
       } catch (error) {
         console.warn('Pesanan tetap tersimpan lokal; sinkronisasi online gagal.', error);
       }
@@ -2166,12 +2194,19 @@
     async function fetchRemoteOrders() {
       if (!REMOTE_API_URL || !REMOTE_API_KEY) return null;
       try {
-        const response = await fetch(`${REMOTE_API_URL}?key=${encodeURIComponent(REMOTE_API_KEY)}`);
+        const response = await fetch(`${REMOTE_API_URL}?apiKey=${encodeURIComponent(REMOTE_API_KEY)}&action=getOrders`);
         const result = await response.json();
-        if (!result.ok || !Array.isArray(result.orders)) return null;
-        return result.orders.map(order => ({
-          ...order,
-          price: Number(order.price) || 0
+        if (result.status !== 'success' || !Array.isArray(result.data)) return null;
+        return result.data.map(order => ({
+          orderId: order['Order ID'],
+          game: order.Game,
+          userId: order['User ID'],
+          zoneId: order['Zone ID'],
+          item: order.Item,
+          payment: order.Payment,
+          price: Number(order.Price) || 0,
+          status: order.Status || 'Menunggu Konfirmasi',
+          date: order.Timestamp
         }));
       } catch (error) {
         console.warn('Pesanan online tidak dapat dimuat.', error);
@@ -2284,7 +2319,7 @@
             <div>Email: <b>${order.email || '-'}</b></div>
             <div class="history-date">${order.payment} | ${order.date}</div>
             <span class="history-status">${order.status || 'Menunggu Konfirmasi'}</span>
-            <select class="dev-edit-select" aria-label="Edit status pesanan" onchange="editDevOrder(${orders.indexOf(order)}, this.value)">
+            <select class="dev-edit-select" aria-label="Edit status pesanan" onchange="editDevOrder('${order.orderId}', this.value)">
               <option value="Menunggu Konfirmasi" ${order.status === 'Menunggu Konfirmasi' || !order.status ? 'selected' : ''}>Menunggu Konfirmasi</option>
               <option value="Lunas" ${order.status === 'Lunas' ? 'selected' : ''}>Lunas</option>
               <option value="Dibatalkan" ${order.status === 'Dibatalkan' ? 'selected' : ''}>Dibatalkan</option>
@@ -2330,20 +2365,27 @@
       openDevPanel();
     }
 
-    function editDevOrder(orderIndex, status) {
+    async function editDevOrder(orderId, status) {
       if (!isDevSessionActive()) {
         alert('Sesi Dev sudah berakhir. Silakan login kembali.');
         closeModal('modalDev');
         return;
       }
 
-      const orders = JSON.parse(localStorage.getItem('orderHistory')) || [];
-      if (!orders[orderIndex]) return;
-      orders[orderIndex].status = status;
-      orders[orderIndex].updatedAt = new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
-      localStorage.setItem('orderHistory', JSON.stringify(orders));
-      showPurchaseNotification('Status pesanan berhasil diperbarui.');
-      openDevPanel();
+      try {
+        const response = await fetch(REMOTE_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ apiKey: REMOTE_API_KEY, action: 'updateStatus', orderId, newStatus: status })
+        });
+        const result = await response.json();
+        if (result.status !== 'success') throw new Error(result.message || 'Gagal memperbarui status.');
+        updateLocalOrderStatus(orderId, status);
+        showPurchaseNotification('Status pesanan diperbarui dan notifikasi Gmail dikirim.');
+        openDevPanel();
+      } catch (error) {
+        showPurchaseNotification(error.message || 'Status pesanan gagal diperbarui.');
+      }
     }
   </script>
 </body>

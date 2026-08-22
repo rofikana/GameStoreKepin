@@ -19,11 +19,11 @@ Buka `index.html` di browser. Untuk fitur Dev Only dengan verifikasi Web Crypto,
 1. Buat Google Sheet baru.
 2. Buka **Extensions > Apps Script**.
 3. Salin isi `Code.gs` ke editor Apps Script.
-4. Pastikan `API_KEY` di `Code.gs` disetel ke `'seicut'` (atau ganti dengan kode rahasia buatanmu).
+4. Pastikan `API_KEY` di `Code.gs` dan `REMOTE_API_KEY` di `index.html` berisi nilai yang sama.
 5. Pilih **Deploy > New deployment**.
 6. Pilih tipe **Web app**, jalankan sebagai akunmu, dan beri akses **Anyone**.
 7. Salin URL Web App hasil deployment.
-8. Masukkan URL hasil deployment ke `REMOTE_API_URL` dan pastikan `REMOTE_API_KEY` bernilai `'seicut'` di `index.html`.
+8. Masukkan URL hasil deployment ke `REMOTE_API_URL` di `index.html`.
 
 Pesanan akan tetap disimpan lokal sebagai cadangan, lalu dikirim ke Google Sheet jika koneksi online tersedia.
 
@@ -39,15 +39,14 @@ WHATSAPP_TO
 
 Token tidak boleh ditaruh di `index.html` atau repository publik. Meta dapat mewajibkan template pesan untuk pesan di luar jendela percakapan 24 jam dan dapat menerapkan biaya sesuai kebijakan akun.
 
-## Verifikasi Pembayaran Otomatis (Rp 0 / Tanpa Modal)
+## Pemeriksaan Status Pembayaran
 
-Sistem menggunakan **Kode Unik 3 Digit + Pemindaian Mutasi Gmail**:
-1. Saat pembeli memilih pembayaran, sistem menambahkan kode unik (contoh: Rp 34.502 + 137 = Rp 34.639).
-2. Pembeli mentransfer nominal tepat hingga 3 digit terakhir ke rekening/e-wallet admin (BCA, GoPay, DANA, dll).
-3. Notifikasi email uang masuk dari Bank/E-Wallet akan masuk ke Gmail akun Google Apps Script admin.
-4. Google Apps Script (`Code.gs`) secara otomatis memeriksa isi inbox Gmail untuk nominal tersebut.
-5. Saat uang terdeteksi di mutasi email, status pesanan otomatis berubah menjadi **Lunas** di Google Sheet dan tampilan website pembeli langsung terverifikasi secara instan.
+Pembeli mentransfer sesuai nominal produk yang dipilih ke rekening atau e-wallet admin. Admin memeriksa pembayaran lalu mengubah kolom **Status** pesanan di Google Sheet menjadi **Lunas**. Website memeriksa status pesanan secara berkala dan akan menampilkan status lunas setelah perubahan itu tersimpan.
+
+Pemindaian mutasi Gmail atau rekening tidak disertakan pada versi ini. Fitur tersebut memerlukan integrasi khusus dengan format notifikasi bank/e-wallet yang digunakan.
 
 ## Panel Dev
 
-Panel Dev tersedia untuk pengujian dengan dua akun yang dikonfigurasi di aplikasi. Panel dapat melihat pesanan, melihat detail email, mengubah status menjadi Menunggu Konfirmasi, Lunas, atau Dibatalkan, serta menghapus riwayat lokal. Login frontend ini diamankan dengan Web Crypto (SHA-256) dan dapat diakses baik secara lokal maupun saat di-deploy online.
+Panel Dev hanya dapat dibuka setelah login dengan ID dan password Dev yang telah dikonfigurasi. Panel dapat membuat pesanan uji tanpa memasukkan data pemain, melihat pesanan, dan mengubah status menjadi Menunggu Konfirmasi, Lunas, atau Dibatalkan.
+
+Setiap pesanan baru dan setiap perubahan status dari Panel Dev dikirim sebagai notifikasi ke alamat `EMAIL_PENERIMA` pada `Code.gs`. Setelah memperbarui `Code.gs`, deploy ulang Apps Script agar notifikasi dan perubahan status aktif.
